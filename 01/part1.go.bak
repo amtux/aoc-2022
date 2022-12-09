@@ -1,0 +1,52 @@
+package main
+
+import (
+	"bufio"
+	"fmt"
+	"os"
+	"strconv"
+)
+
+var INPUT_FILE = "./input.txt"
+
+func main() {
+	file, err := os.Open(INPUT_FILE)
+	poe(err)
+	defer file.Close()
+	scanner := bufio.NewScanner(file)
+
+	// we only need max calories
+	// dont need to track in slice
+	var thisCal, maxCals int
+
+	for scanner.Scan() {
+		line := scanner.Text()
+		fmt.Println(scanner.Text())
+		if line == "" {
+			if thisCal > maxCals {
+				maxCals = thisCal
+				fmt.Printf("maxcals so far: %d\n", maxCals)
+			}
+			thisCal = 0
+		} else {
+			thisCal += stoi(line)
+			// fmt.Printf("this cal value: %d \n", thisCal)
+		}
+	}
+	fmt.Printf("max cals: %d", maxCals)
+	poe(scanner.Err())
+}
+
+// poe is panic on error
+func poe(err error) {
+	if err != nil {
+		panic(err)
+	}
+}
+
+func stoi(s string) int {
+	i, err := strconv.Atoi(s)
+	poe(err)
+	return i
+
+}

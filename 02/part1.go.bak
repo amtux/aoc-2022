@@ -1,0 +1,100 @@
+package main
+
+import (
+	"bufio"
+	"fmt"
+	"os"
+	"strconv"
+	"strings"
+)
+
+var INPUT_FILE = "./input.txt"
+
+func main() {
+	/*
+	   opponent me
+	   A Y - A rock, Y paper
+	   B X - B paper, X rock
+	   C Z - C scissors, Z scissors
+	*/
+	file, err := os.Open(INPUT_FILE)
+	poe(err)
+	defer file.Close()
+	scanner := bufio.NewScanner(file)
+	var totalScore int
+	for scanner.Scan() {
+		line := scanner.Text()
+		s := strings.Split(line, " ")
+		left := s[0]
+		right := s[1]
+		fmt.Printf(
+			"left: '%s', right: '%s'\n",
+			left,
+			right,
+		)
+		moveScore := calcMoveScore(left, right)
+		fmt.Printf("move score: %d\n", moveScore)
+		totalScore += moveScore
+	}
+	fmt.Printf("total score: %d\n", totalScore)
+
+}
+
+func calcMoveScore(left, right string) int {
+	// (1 for Rock, 2 for Paper, and 3 for Scissors) plus
+	// the score for the outcome of the round
+	// (0 if you lost, 3 if the round was a draw, and 6 if you won).
+	var score int
+	switch right {
+	case "X":
+		// rock
+		score = 1
+	case "Y":
+		// paper
+		score = 2
+	case "Z":
+		// scissors
+		score = 3
+	}
+	// fmt.Printf("Score is %d\n", score)
+	var result int = 0
+	switch left {
+	case "A":
+		switch right {
+		case "X":
+			result = 3
+		case "Y":
+			result = 6
+		}
+	case "B":
+		switch right {
+		case "Y":
+			result = 3
+		case "Z":
+			result = 6
+		}
+	case "C":
+		switch right {
+		case "Z":
+			result = 3
+		case "X":
+			result = 6
+		}
+	}
+	return result + score
+
+}
+
+// poe is panic on error
+func poe(err error) {
+	if err != nil {
+		panic(err)
+	}
+}
+
+func stoi(s string) int {
+	i, err := strconv.Atoi(s)
+	poe(err)
+	return i
+
+}

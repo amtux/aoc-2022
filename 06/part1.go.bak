@@ -1,0 +1,75 @@
+package main
+
+import (
+	"bufio"
+	"fmt"
+	"os"
+	"strconv"
+)
+
+var INPUT_FILE = "./input.txt"
+
+func main() {
+
+	file, err := os.Open(INPUT_FILE)
+	poe(err)
+	defer file.Close()
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		line := scanner.Text()
+		r := []rune(line)
+		fmt.Printf("result is: %d\n", uniqueMarker(r))
+	}
+}
+
+func uniqueMarker(r []rune) int {
+	for i := range r {
+		var tempR []rune
+		for j := i; j < i+4; j++ {
+			if j == len(r) {
+				// nothing unique found here
+				return 0
+			}
+			tempR = append(tempR, r[j])
+		}
+		// fmt.Printf("checking if %v is unique: ", tempR)
+
+		isUnique := checkRunesUnique(tempR)
+		// fmt.Println(isUnique)
+
+		if isUnique {
+			// return real world index. starting with 1 so add 1
+			return i + 4
+		}
+	}
+	return 0
+}
+
+func checkRunesUnique(runes []rune) bool {
+	// fmt.Printf("testing runes for uniqueness: %v\n", runes)
+	unique := make(map[rune]bool, len(runes))
+	for _, r := range runes {
+		// fmt.Printf("in here with r: %v\n", r)
+		_, exists := unique[r]
+		if exists {
+			return false
+		} else {
+			unique[r] = true
+		}
+	}
+	return true
+
+}
+
+// poe is panic on error
+func poe(err error) {
+	if err != nil {
+		panic(err)
+	}
+}
+
+func stoi(s string) int {
+	i, err := strconv.Atoi(s)
+	poe(err)
+	return i
+}

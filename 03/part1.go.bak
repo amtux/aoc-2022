@@ -1,0 +1,87 @@
+package main
+
+import (
+	"bufio"
+	"fmt"
+	"os"
+	"strconv"
+	"unicode"
+	// "github.com/juliangruber/go-intersect"
+)
+
+var INPUT_FILE = "./input.txt"
+
+func main() {
+	file, err := os.Open(INPUT_FILE)
+	poe(err)
+	defer file.Close()
+	scanner := bufio.NewScanner(file)
+	var totalValue int
+	for scanner.Scan() {
+		line := scanner.Text()
+		lineRune := []rune(line)
+		c1 := lineRune[:len(lineRune)/2]
+		c2 := lineRune[len(lineRune)/2:]
+		fmt.Printf(
+			"left: '%s', right: '%s'\n",
+			string(c1),
+			string(c2),
+		)
+		is := intersect(c1, c2)
+		value := getValue(is[0])
+		fmt.Printf("value for %s is: %d\n", string(is[0]), value)
+		totalValue += value
+
+		// fmt.Printf("is is: %v\n", string(is))
+		// intersect.Simple(c1, c2)
+		// https://github.com/juliangruber/go-intersect
+		// fmt.Printf("line: %s\n", line)
+		// totalScore += moveScore
+	}
+	fmt.Printf("total value is: %d\n", totalValue)
+}
+
+func getValue(r rune) int {
+	// Lowercase item types a through z have priorities 1 through 26.
+	// Uppercase item types A through Z have priorities 27 through 52.
+	if unicode.IsUpper(r) {
+		return int(r) - 64 + 26
+
+	}
+	return int(r) - 96
+}
+
+func intersect(a, b []rune) []rune {
+	var res []rune
+	for _, i := range a {
+		for _, j := range b {
+			if i == j && !elemExists(i, res) {
+				res = append(res, i)
+			}
+		}
+	}
+	return res
+}
+
+func elemExists(r rune, a []rune) bool {
+	for _, i := range a {
+		if r == i {
+			return true
+		}
+	}
+	return false
+}
+
+// poe is panic on error
+func poe(err error) {
+	if err != nil {
+		panic(err)
+	}
+}
+
+func stoi(s string) int {
+	i, err := strconv.Atoi(s)
+	poe(err)
+	return i
+
+}
